@@ -1,0 +1,60 @@
+# RaceDay API Endpoint Plan
+
+This document lists every endpoint the RaceDay API will expose, grouped by feature area. It was completed before any API code was written, as required for Part 1.
+
+**Roles:**
+- `None` – public endpoint, no login needed
+- `Any` – any logged-in user, regardless of role
+- `Organiser` / `Participant` – restricted to that specific role
+
+---
+
+## Authentication
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| POST | `/api/auth/register` | Registers a new user as either an Organiser or a Participant. | None | `{ firstName, lastName, email, password, role }` | **201** – account created, returns user id and role. **400** – validation failed. **409** – email already in use. |
+| POST | `/api/auth/login` | Logs a user in and returns a JWT for authenticated requests. | None | `{ email, password }` | **200** – returns token, user id, and role. **401** – invalid credentials. |
+
+## User Profile
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| GET | `/api/users/profile` | Returns the logged-in user's own profile details. | Any | — | **200** – returns first name, last name, email, role. **401** – not logged in. |
+| PUT | `/api/users/profile` | Lets a user update their own profile. | Any | `{ firstName, lastName, email }` | **200** – returns the updated profile. **400** – validation failed. |
+
+## Events
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| GET | `/api/events` | Lists all events so participants can browse what's coming up. | None | — | **200** – returns an array of events. |
+| GET | `/api/events/{id}` | Returns the full details of one event, including its categories. | None | — | **200** – event details. **404** – event not found. |
+| POST | `/api/events` | Creates a new event under the logged-in organiser. | Organiser | `{ name, description, eventDate, location }` | **201** – event created. **400** – validation failed. |
+| PUT | `/api/events/{id}` | Updates an event, but only if the logged-in organiser owns it. | Organiser | `{ name, description, eventDate, location }` | **200** – updated event returned. **403** – not the owner. **404** – not found. |
+| DELETE | `/api/events/{id}` | Deletes an event owned by the logged-in organiser. | Organiser | — | **204** – deleted. **403** – not the owner. **404** – not found. |
+
+## Categories
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| GET | `/api/events/{eventId}/categories` | Lists the race categories (e.g. 5 km, 10 km) available for an event. | None | — | **200** – array of categories. **404** – event not found. |
+| POST | `/api/events/{eventId}/categories` | Adds a new category to an event. | Organiser | `{ name, distanceKm, fee }` | **201** – category created. **400** – validation failed. **403** – not the event owner. |
+| PUT | `/api/categories/{id}` | Edits an existing category. | Organiser | `{ name, distanceKm, fee }` | **200** – updated category. **403** – not the owner. **404** – not found. |
+| DELETE | `/api/categories/{id}` | Removes a category from an event. | Organiser | — | **204** – deleted. **403** – not the owner. **404** – not found. |
+
+## Event Enrolments
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| POST | `/api/categories/{categoryId}/enrolments` | Enrols the logged-in participant into a category. | Participant | — | **201** – enrolment created. **404** – category not found. **409** – already enrolled. |
+| GET | `/api/users/enrolments` | Lists everything the logged-in participant has entered. | Participant | — | **200** – array of the participant's enrolments. |
+| GET | `/api/events/{eventId}/enrolments` | Lets the organiser see everyone enrolled in their event. | Organiser | — | **200** – array of enrolments. **403** – not the owner. **404** – event not found. |
+| DELETE | `/api/enrolments/{id}` | Lets a participant cancel their own entry. | Participant | — | **204** – cancelled. **403** – not the enrolment owner. **404** – not found. |
+
+## Results
+
+| Method | Route | Description | Role Required | Request Body | Expected Response |
+|--------|-------|-------------|----------------|---------------|--------------------|
+| POST | `/api/enrolments/{id}/results` | Captures a participant's finishing time and position. | Organiser | `{ finishTime, position }` | **201** – result recorded. **404** – enrolment not found. **409** – result already captured. |
+| GET | `/api/users/results` | Returns the logged-in participant's full results history. | Participant | — | **200** – array of past results. |
+| GET | `/api/events/{eventId}/results` | Public results/leaderboard for a finished event. | None | — | **200** – array of results. **404** – event not found. |
