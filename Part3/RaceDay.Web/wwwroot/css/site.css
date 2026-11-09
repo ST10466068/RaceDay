@@ -1,31 +1,143 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+:root {
+    --rd-navy: #0B1F3A;
+    --rd-orange: #FF5A1F;
+    --rd-orange-dark: #E04A12;
+    --rd-green: #1E9E57;
+    --rd-amber: #F5A623;
+    --rd-light: #F4F6FA;
+    --bs-primary: #FF5A1F;
+    --bs-primary-rgb: 255, 90, 31;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    font-size: 15px;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+    background: var(--rd-light);
+    color: #1b2a41;
+    margin-bottom: 70px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+h1, h2, h3, h4 {
+    font-weight: 700;
+    color: var(--rd-navy);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.rd-navbar {
+    background: var(--rd-navy);
+    border-bottom: 4px solid var(--rd-orange);
+}
+
+.rd-brand {
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 1.4rem;
+}
+
+    .rd-brand span {
+        color: var(--rd-orange);
+    }
+
+.rd-badge-role {
+    background: var(--rd-orange);
+}
+
+.btn-primary {
+    background: var(--rd-orange);
+    border-color: var(--rd-orange);
+    font-weight: 600;
+}
+
+    .btn-primary:hover, .btn-primary:focus {
+        background: var(--rd-orange-dark);
+        border-color: var(--rd-orange-dark);
+    }
+
+.btn-outline-primary {
+    color: var(--rd-orange);
+    border-color: var(--rd-orange);
+}
+
+    .btn-outline-primary:hover {
+        background: var(--rd-orange);
+        border-color: var(--rd-orange);
+    }
+
+a {
+    color: var(--rd-orange-dark);
+}
+
+.card {
+    border: 0;
+    border-radius: 14px;
+}
+
+.card-header {
+    background: var(--rd-navy);
+    color: #fff;
+    border-radius: 14px 14px 0 0 !important;
+}
+
+.rd-hero {
+    background: linear-gradient(135deg, var(--rd-navy) 0%, #16345f 60%, var(--rd-orange) 140%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+}
+
+    .rd-hero h1 {
+        color: #fff;
+        font-size: 2.4rem;
+    }
+
+/* Enrolment status colours */
+.status-confirmed {
+    background: var(--rd-green);
+    color: #fff;
+}
+
+.status-pending {
+    background: var(--rd-amber);
+    color: #1b2a41;
+}
+
+.status-cancelled {
+    background: #8a94a6;
+    color: #fff;
+}
+
+.status-badge {
+    padding: .4em .8em;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.event-banner {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 14px 14px 0 0;
+    background: var(--rd-navy);
+}
+
+.table thead th {
+    background: var(--rd-navy);
+    color: #fff;
+    border: 0;
+}
+
+.rd-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    line-height: 50px;
+    background: var(--rd-navy);
+    color: #c8d1e0;
+    text-align: center;
 }
