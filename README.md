@@ -1,66 +1,59 @@
-
-
 # RaceDay
 PROG6212 POE - RaceDay event management system
 
 ## About the System
-RaceDay is a full-stack web-based event management system built for South Africa's road running, walking, and cycling community. It's designed to replace the paper-based registration and spreadsheet tracking that many local road events still rely on.
+RaceDay is a full-stack web-based event management system built for South Africa's road running, walking, and cycling community. It replaces the paper-based registration and spreadsheet tracking that many local road events still rely on.
 
-The platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter events, and track their personal performance history.
-
-This repository now contains Part 1 (system planning and database design) and Part 2 (the RESTful API) of the Portfolio of Evidence for PROG6212.
+Organisers create and manage events, categories and results. Participants browse upcoming events, enrol, and track their personal race history.
 
 ## Roles
-
 **Organiser**
-- Creates, edits, and deletes their own events
-- Manages event categories (e.g. 5km, 10km, 21km)
-- Captures participant results
-- Views all enrolments for their events
+- Dashboard with events, enrolments per event and upcoming dates
+- Creates, edits and deletes their own events (with a banner image)
+- Manages categories, views and confirms enrolments, and publishes results
 
 **Participant**
-- Creates an account
-- Browses available events
-- Enters an event by selecting a category
-- Views their own enrolments and results history
+- Browses and filters upcoming events and views event details
+- Enrols in a category, views enrolment status (green Confirmed, amber Pending)
+- Views personal results (e.g. 47th out of 312 finishers)
+- Updates their profile and uploads a profile picture
 
-Both roles can view events and categories, and view and update their own profile. If a Participant tries to use an Organiser endpoint (or the other way round), the API returns 403 Forbidden. An Organiser also can't change another Organiser's event. Passwords are hashed with BCrypt and never stored in plain text.
+Each role has its own navigation. Unauthenticated users cannot reach protected pages, and the wrong role is redirected. Passwords are hashed (BCrypt).
 
-## Part 1 Contents
-Inside the /docs folder:
-- RaceDay_ERD.png: Entity Relationship Diagram for the database
-- API_Endpoint_Plan.md: Full API endpoint plan covering authentication, user profile, events, categories, enrolments, and results
-- RaceDay_Database.sql: SQL script that creates and seeds the RaceDay database in SSMS
+## Repository layout
+- `docs/` - Part 1: ERD, endpoint plan, SQL script
+- `Part2/` - Part 2: ASP.NET Core Web API and unit tests
+- `Part3/` - Part 3: API with Azure Blob Storage, MVC website (`RaceDay.Web`), Dockerfile
 
-## Part 2 Contents
-Inside the /Part2 folder:
-- RaceDay.Api: ASP.NET Core Web API (controllers, models, EF Core context and migrations)
-- RaceDay.Tests: xUnit tests for the API
-
-Built with ASP.NET Core, Entity Framework Core (code-first), SQL Server, JWT authentication and Swagger.
-
-## Setup and Run
+## Setup and run locally (Part 3)
 1. Install the .NET 9 SDK and Visual Studio 2022.
-2. Clone the repo and open `Part2/RaceDay.sln`.
-3. Check the connection string in `Part2/RaceDay.Api/appsettings.json`.
-4. Open a terminal in the `Part2` folder and run:
-   ```
-   dotnet tool install --global dotnet-ef
-   dotnet ef database update --project RaceDay.Api
-   dotnet run --project RaceDay.Api
-   ```
-5. Open `https://localhost:7088/swagger` in a browser.
-6. Register, log in, click **Authorize** and paste the token (without "Bearer ") to use the protected endpoints.
+2. Open `Part3/RaceDay.sln`.
+3. Set the SQL connection string and the Blob Storage connection string in `Part3/RaceDay.Api/appsettings.json`.
+   - Azure: use your storage account connection string.
+   - Local: run the Azurite emulator and keep `UseDevelopmentStorage=true`.
+4. In a terminal from `Part3`: `dotnet ef database update --project RaceDay.Api`
+5. Set both **RaceDay.Api** and **RaceDay.Web** as startup projects and press F5.
+6. API Swagger: `https://localhost:7088/swagger`. Website: opens automatically.
 
-## Run the Unit Tests
+## Run with Docker
+Start the API (Visual Studio, http port 5100), then from the `Part3` folder:
 ```
-cd Part2
+docker build -t raceday-web .
+docker run -p 8080:8080 -e Api__BaseUrl=http://host.docker.internal:5100/ raceday-web
+```
+Open `http://localhost:8080`.
+
+## Azure Blob Storage
+The MVC site never talks to Azure. Images are uploaded to the API (`POST /api/events/{id}/banner` and `POST /api/users/profile/picture`), which stores them in Blob Storage and saves the URL.
+
+## Unit tests
+```
+cd Part3
 dotnet test
 ```
-The tests use an in-memory database, so SQL Server is not needed. They cover registration and login, event management, role rejection, and enrolments.
 
 ## CI/CD
-GitHub Actions builds the project and runs all the unit tests on every push.
+GitHub Actions builds Part 2 and Part 3 (including the MVC project) and runs all unit tests on every push.
 
 
 
@@ -69,4 +62,5 @@ GitHub Actions builds the project and runs all the unit tests on every push.
 
 
 ## Video
-YouTube (unlisted): _add link here_
+
+Part 3 (unlisted): _add link here_
