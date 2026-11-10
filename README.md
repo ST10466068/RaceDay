@@ -63,4 +63,4 @@ GitHub Actions builds Part 2 and Part 3 (including the MVC project) and runs all
 
 ## Video
 
-Part 3 (unlisted): _add link here_
+https://youtube.com/shorts/b_jKg-FY0rk?si=nTBoiMQl-hOgr44A 
