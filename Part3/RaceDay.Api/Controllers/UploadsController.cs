@@ -1,4 +1,4 @@
-﻿/using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Api.Data;
 using RaceDay.Api.Services;
