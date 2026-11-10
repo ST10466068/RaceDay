@@ -1,0 +1,39 @@
+@model EventFormVm
+@{
+    var isNew = Model.EventId == 0;
+    ViewData["Title"] = isNew ? "Create event" : "Edit event";
+}
+<h2 class="mb-3">@ViewData["Title"]</h2>
+<div class="card p-4 shadow-sm">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <form asp-action="@(isNew ? "CreateEvent" : "EditEvent")" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="EventId" />
+        <input type="hidden" asp-for="BannerUrl" />
+        <div class="mb-3"><label asp-for="Name" class="form-label"></label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control" rows="3"></textarea><span asp-validation-for="Description" class="text-danger"></span></div>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label asp-for="EventDate" class="form-label">Date and time</label><input asp-for="EventDate" type="datetime-local" class="form-control" /><span asp-validation-for="EventDate" class="text-danger"></span></div>
+            <div class="col-md-6 mb-3"><label asp-for="Location" class="form-label"></label><input asp-for="Location" class="form-control" /><span asp-validation-for="Location" class="text-danger"></span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="EventType" class="form-label">Event type</label>
+                <select asp-for="EventType" class="form-select">
+                    @foreach (var t in new[] { "Run", "Walk", "Cycle" }) {
+                    <option value="@t" selected="@(Model.EventType == t)">@t</option>
+ }
+                </select>
+            </div>
+            <div class="col-md-6 mb-3"><label asp-for="DistanceKm" class="form-label">Distance (km)</label><input asp-for="DistanceKm" class="form-control" /><span asp-validation-for="DistanceKm" class="text-danger"></span></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Banner image (JPG, PNG or WEBP, max 5MB)</label>
+            @if (!string.IsNullOrEmpty(Model.BannerUrl)) { <div class="mb-2"><img src="@Model.BannerUrl" alt="Current banner" style="max-height:120px;border-radius:10px" /></div> }
+            <input type="file" name="Banner" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
+        </div>
+        <button class="btn btn-primary">Save event</button>
+        <a class="btn btn-outline-secondary" asp-action="Events">Cancel</a>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" /> }

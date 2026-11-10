@@ -1,0 +1,24 @@
+﻿@model List<EnrolmentVm>
+    @{ ViewData["Title"] = "My Enrolments"; }
+    <h2 class="mb-3">My Enrolments</h2>
+    <table class="table bg-white align-middle">
+        <thead><tr><th>Event</th><th>Category</th><th>Enrolled on</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var e in Model)
+    {
+            <tr>
+                <td><a asp-controller="Home" asp-action="Details" asp-route-id="@e.EventId">@e.EventName</a></td>
+                <td>@e.CategoryName</td>
+                <td>@e.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                <td><span class="status-badge status-@e.Status.ToLower()">@e.Status</span></td>
+                <td class="text-end">
+                    <form asp-action="Cancel" method="post" onsubmit="return confirm('Cancel this enrolment?');">
+                        <input type="hidden" name="id" value="@e.EnrolmentId" />
+                        <button class="btn btn-outline-danger btn-sm">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (!Model.Any()) { <p class="text-muted">You haven't entered any events yet. <a asp-controller="Home" asp-action="Index">Browse events</a></p> }

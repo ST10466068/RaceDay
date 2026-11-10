@@ -1,0 +1,26 @@
+﻿@model List<ResultVm>
+    @{ ViewData["Title"] = "My Results"; }
+    @functions {
+    static string Ord(int n)
+    {
+        var suffix = (n % 100 >= 11 && n % 100 <= 13) ? "th" : (n % 10) switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th" };
+        return n + suffix;
+    }
+    }
+    <h2 class="mb-3">My Results</h2>
+    <table class="table bg-white align-middle">
+        <thead><tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr></thead>
+        <tbody>
+            @foreach (var r in Model)
+    {
+            <tr>
+                <td>@r.EventName</td>
+                <td>@r.EventDate.ToString("dd MMM yyyy")</td>
+                <td>@r.CategoryName</td>
+                <td>@r.FinishTime.ToString(@"hh\:mm\:ss")</td>
+                <td>@(r.Position.HasValue ? $"{Ord(r.Position.Value)} out of {r.Finishers} finishers" : "-")</td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (!Model.Any()) { <p class="text-muted">No results yet. They appear here once an Organiser publishes them.</p> }

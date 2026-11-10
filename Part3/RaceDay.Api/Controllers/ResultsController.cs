@@ -32,7 +32,7 @@ public class ResultsController(RaceDayContext db) : ControllerBase
         return StatusCode(201, new { r.ResultId, r.EnrolmentId, r.FinishTime, r.Position });
     }
 
-    /// <summary>Returns the logged-in Participant's results history.</summary>
+    /// <summary>Returns the logged-in Participant's results history, with the number of finishers in each category.</summary>
     [HttpGet("users/results")]
     [Authorize(Roles = "Participant")]
     [ProducesResponseType(200)]
@@ -45,7 +45,9 @@ public class ResultsController(RaceDayContext db) : ControllerBase
             r.FinishTime,
             r.Position,
             eventName = r.Enrolment.Category.Event.Name,
-            categoryName = r.Enrolment.Category.Name
+            eventDate = r.Enrolment.Category.Event.EventDate,
+            categoryName = r.Enrolment.Category.Name,
+            finishers = db.Results.Count(x => x.Enrolment.CategoryId == r.Enrolment.CategoryId)
         }).ToListAsync());
     }
 

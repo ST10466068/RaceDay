@@ -1,0 +1,29 @@
+@model List<EnrolmentVm>
+    @{
+    ViewData["Title"] = "Results";
+    var ev = (EventVm)ViewBag.Event;
+    }
+    <a asp-action="Events" class="btn btn-link ps-0">&larr; My events</a>
+    <h2 class="mb-3">Results: @ev.Name</h2>
+    <p class="text-muted">Enter each finisher's time and position, then click Publish. Participants see it straight away in My Results.</p>
+    <table class="table bg-white align-middle">
+        <thead><tr><th>Participant</th><th>Category</th><th>Status</th><th>Finish time</th><th>Position</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var e in Model)
+    {
+            <tr>
+                <form asp-action="SaveResult" method="post">
+                    <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                    <input type="hidden" name="eventId" value="@ev.EventId" />
+                <td>@e.ParticipantName</td>
+                <td>@e.CategoryName</td>
+                <td><span class="status-badge status-@e.Status.ToLower()">@e.Status</span></td>
+                <td><input type="time" step="1" name="finishTime" class="form-control form-control-sm" required /></td>
+                <td><input type="number" min="1" name="position" class="form-control form-control-sm" style="width:90px" required /></td>
+                <td class="text-end"><button class="btn btn-primary btn-sm">Publish</button></td>
+                </form>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (!Model.Any()) { <p class="text-muted">No enrolled participants yet.</p> }

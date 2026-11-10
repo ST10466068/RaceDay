@@ -1,0 +1,32 @@
+@model List<EventVm>
+    @{ ViewData["Title"] = "My Events"; }
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">My Events</h2>
+        <a class="btn btn-primary" asp-action="CreateEvent">+ New event</a>
+    </div>
+    <table class="table bg-white align-middle">
+        <thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Location</th><th>Distance</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var e in Model)
+    {
+            <tr>
+                <td>@e.Name</td>
+                <td>@e.EventDate.ToString("dd MMM yyyy")</td>
+                <td>@e.EventType</td>
+                <td>@e.Location</td>
+                <td>@(e.DistanceKm.HasValue ? e.DistanceKm + " km" : "-")</td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-outline-primary btn-sm" asp-action="EditEvent" asp-route-id="@e.EventId">Edit</a>
+                    <a class="btn btn-outline-primary btn-sm" asp-action="Categories" asp-route-eventId="@e.EventId">Categories</a>
+                    <a class="btn btn-outline-primary btn-sm" asp-action="Enrolments" asp-route-eventId="@e.EventId">Enrolments</a>
+                    <a class="btn btn-outline-primary btn-sm" asp-action="Results" asp-route-eventId="@e.EventId">Results</a>
+                    <form asp-action="DeleteEvent" method="post" class="d-inline" onsubmit="return confirm('Delete this event and everything linked to it?');">
+                        <input type="hidden" name="id" value="@e.EventId" />
+                        <button class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    @if (!Model.Any()) { <p class="text-muted">You haven't created any events yet.</p> }

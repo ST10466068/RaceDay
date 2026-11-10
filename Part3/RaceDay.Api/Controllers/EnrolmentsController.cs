@@ -5,11 +5,13 @@ using RaceDay.Api.Data;
 using RaceDay.Api.Models;
 namespace RaceDay.Api.Controllers;
 
+public record StatusDto(string Status);
+
 [ApiController]
 [Route("api")]
 public class EnrolmentsController(RaceDayContext db) : ControllerBase
 {
-    /// <summary>Enrols the logged-in Participant into a category.</summary>
+    /// <summary>Enrols the logged-in Participant into a category (status starts as Pending).</summary>
     /// <remarks>No body. Returns 201 when enrolled, 404 if the category does not exist, 409 if already enrolled.</remarks>
     [HttpPost("categories/{categoryId:int}/enrolments")]
     [Authorize(Roles = "Participant")]
@@ -24,7 +26,7 @@ public class EnrolmentsController(RaceDayContext db) : ControllerBase
         if (await db.Enrolments.AnyAsync(e => e.CategoryId == categoryId && e.ParticipantId == uid))
             return Conflict(new { error = "Already enrolled in this category." });
 
-        var en = new Enrolment { CategoryId = categoryId, ParticipantId = uid };
+        var en = new Enrolment { CategoryId = categoryId, ParticipantId = uid, Status = "Pending" };
         db.Enrolments.Add(en);
         await db.SaveChangesAsync();
         return StatusCode(201, new { en.EnrolmentId, en.CategoryId, eventId = cat.EventId, en.Status, en.EnrolmentDate });
@@ -70,6 +72,26 @@ public class EnrolmentsController(RaceDayContext db) : ControllerBase
             categoryId = e.CategoryId,
             categoryName = e.Category.Name
         }).ToListAsync());
+    }
+
+    /// <summary>Lets an Organiser set an enrolment to Pending, Confirmed or Cancelled.</summary>
+    /// <remarks>Body: status.</remarks>
+    [HttpPut("enrolments/{id:int}/status")]
+    [Authorize(Roles = "Organiser")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> SetStatus(int id, StatusDto dto)
+    {
+        if (dto.Status != "Pending" && dto.Status != "Confirmed" && dto.Status != "Cancelled")
+            return BadRequest(new { error = "Status must be Pending, Confirmed or Cancelled." });
+        var en = await db.Enrolments.Include(e => e.Category).ThenInclude(c => c.Event).FirstOrDefaultAsync(e => e.EnrolmentId == id);
+        if (en == null) return NotFound();
+        if (en.Category.Event.OrganiserId != User.UserId()) return Forbid();
+        en.Status = dto.Status;
+        await db.SaveChangesAsync();
+        return Ok(new { en.EnrolmentId, en.Status });
     }
 
     /// <summary>Lets a Participant cancel their own enrolment.</summary>

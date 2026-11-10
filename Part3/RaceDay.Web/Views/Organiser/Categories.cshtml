@@ -1,0 +1,34 @@
+@model EventVm
+@{ ViewData["Title"] = "Categories"; }
+<a asp-action="Events" class="btn btn-link ps-0">&larr; My events</a>
+<h2 class="mb-3">Categories: @Model.Name</h2>
+<table class="table bg-white align-middle">
+    <thead><tr><th>Name</th><th>Distance</th><th>Fee</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var c in Model.Categories)
+    {
+        <tr>
+            <td>@c.Name</td>
+            <td>@c.DistanceKm km</td>
+            <td>R @c.Fee.ToString("0.00")</td>
+            <td class="text-end">
+                <form asp-action="DeleteCategory" method="post" onsubmit="return confirm('Remove this category?');">
+                    <input type="hidden" name="categoryId" value="@c.CategoryId" />
+                    <input type="hidden" name="eventId" value="@Model.EventId" />
+                    <button class="btn btn-outline-danger btn-sm">Remove</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div class="card p-3 shadow-sm">
+    <h5>Add a category</h5>
+    <form asp-action="AddCategory" method="post" class="row g-2">
+        <input type="hidden" name="eventId" value="@Model.EventId" />
+        <div class="col-md-4"><input name="Name" class="form-control" placeholder="e.g. 10km, Under 20, Senior" required /></div>
+        <div class="col-md-3"><input name="DistanceKm" type="number" step="0.01" class="form-control" placeholder="Distance (km)" required /></div>
+        <div class="col-md-3"><input name="Fee" type="number" step="0.01" class="form-control" placeholder="Fee (R)" required /></div>
+        <div class="col-md-2"><button class="btn btn-primary w-100">Add</button></div>
+    </form>
+</div>

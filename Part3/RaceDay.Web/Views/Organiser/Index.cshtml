@@ -1,0 +1,27 @@
+@model List<EventVm>
+@{
+    ViewData["Title"] = "Dashboard";
+    var counts = (Dictionary<int, int>)ViewBag.Counts;
+    var upcoming = Model.Where(e => e.EventDate >= DateTime.Today).ToList();
+}
+<h2 class="mb-3">Organiser Dashboard</h2>
+<div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="card p-3 text-center"><div class="display-6">@Model.Count</div>Events created</div></div>
+    <div class="col-md-4"><div class="card p-3 text-center"><div class="display-6">@counts.Values.Sum()</div>Total enrolments</div></div>
+    <div class="col-md-4"><div class="card p-3 text-center"><div class="display-6">@(upcoming.Any() ? upcoming.First().EventDate.ToString("dd MMM") : "-")</div>Next event</div></div>
+</div>
+<table class="table bg-white align-middle">
+    <thead><tr><th>Event</th><th>Date</th><th>Enrolments</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var e in Model)
+    {
+        <tr>
+            <td>@e.Name</td>
+            <td>@e.EventDate.ToString("dd MMM yyyy")</td>
+            <td><span class="badge bg-dark">@counts[e.EventId]</span></td>
+            <td class="text-end"><a class="btn btn-outline-primary btn-sm" asp-action="Enrolments" asp-route-eventId="@e.EventId">View enrolments</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+@if (!Model.Any()) { <p class="text-muted">No events yet. <a asp-action="CreateEvent">Create your first event</a></p> }

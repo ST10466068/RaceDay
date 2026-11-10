@@ -1,0 +1,50 @@
+﻿@model EventVm
+@{
+    ViewData["Title"] = Model.Name;
+    var role = Context.Session.GetString("Role");
+}
+<a asp-action="Index" class="btn btn-link ps-0">&larr; Back to events</a>
+
+<div class="card shadow-sm mb-4">
+    @if (!string.IsNullOrEmpty(Model.BannerUrl)) { <img class="event-banner" style="height:260px" src="@Model.BannerUrl" alt="@Model.Name" /> }
+    else { <div class="event-banner" style="height:260px"></div> }
+    <div class="card-body">
+        <span class="badge bg-dark">@Model.EventType</span>
+        <h2 class="mt-2">@Model.Name</h2>
+        <p class="text-muted">
+            @Model.EventDate.ToString("dddd, dd MMMM yyyy 'at' HH:mm") &middot; @Model.Location
+            @if (Model.DistanceKm.HasValue) { <text> &middot; @Model.DistanceKm km</text> }
+        </p>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<h4>Categories</h4>
+<table class="table bg-white align-middle">
+    <thead><tr><th>Category</th><th>Distance</th><th>Fee</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var c in Model.Categories)
+        {
+        <tr>
+            <td>@c.Name</td>
+            <td>@c.DistanceKm km</td>
+            <td>R @c.Fee.ToString("0.00")</td>
+            <td class="text-end">
+                @if (role == "Participant")
+                {
+                <form asp-action="Enrol" method="post" class="d-inline">
+                    <input type="hidden" name="categoryId" value="@c.CategoryId" />
+                    <input type="hidden" name="eventId" value="@Model.EventId" />
+                    <button class="btn btn-primary btn-sm">Enrol</button>
+                </form>
+                }
+                else if (role == null)
+                {
+                <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">Log in to enrol</a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+@if (!Model.Categories.Any()) { <p class="text-muted">No categories have been added yet.</p> }
